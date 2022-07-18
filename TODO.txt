@@ -1,6 +1,3 @@
-in checkorderupdate, check each displayed order to see if it matches up with any of the buy/sell orders in the list
-
-TODO: Add order state tracking through tracking OrderListHandler.checkOrderList every 2.5 seconds
 TODO: Add npc to baz command
 TODO: Add baz to npc command(margin, profit)
 TODO: Add crash reports
