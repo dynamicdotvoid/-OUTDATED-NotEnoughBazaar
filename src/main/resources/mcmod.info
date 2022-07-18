@@ -1,0 +1,16 @@
+[
+{
+  "modid": "nullnotenoughbazaar",
+  "name": "Not Enough Bazaar",
+  "description": "Hypixel Skyblock bazaar flipping mod with many features.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["nullOverload"],
+  "credits": "The internet, and Bazaar Notifier for inspiration.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

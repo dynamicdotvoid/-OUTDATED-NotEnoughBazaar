@@ -1,0 +1,12 @@
+in checkorderupdate, check each displayed order to see if it matches up with any of the buy/sell orders in the list
+
+TODO: Add order state tracking through tracking OrderListHandler.checkOrderList every 2.5 seconds
+TODO: Add npc to baz command
+TODO: Add baz to npc command(margin, profit)
+TODO: Add crash reports
+TODO: Add toggleable gui with order state, etc
+TODO: Add deals gui(baz to npc using recent crashes, etc.)
+TODO: Add profitable crafts one level(gets recipe and checks item prices)
+TODO: Add profitibale crafts multi level(gets recipe and all crafts for the items in said recipe
+TODO: Add short term flips command/gui
+TODO: Add short term flips command/gui
