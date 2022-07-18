@@ -1,8 +1,8 @@
 # NotEnoughBazaar
  A Hypixel Skyblock bazaar flipping mod with many features.
 
-#Authors
+# Authors
  nullOverload
 
-#Credits
+# Credits
  Bazaar Notifier for the inspiration(https://github.com/symt/BazaarNotifier), and the internet for existing.
