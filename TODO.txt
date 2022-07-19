@@ -1,5 +1,6 @@
 TODO: Add npc to baz command(/neb npcbaz [instant])
 TODO: Add baz to npc command(/neb baznpc [margin/profit] [instant] [amount/purse])
+TODO: Save current orders to file
 TODO: Add crash reports
 TODO: Add toggleable gui with order state, etc
 TODO: Add deals gui(baz to npc using recent crashes, etc.)
