@@ -208,12 +208,13 @@ public class NotEnoughBazaarCommand extends CommandBase {
 					    			}
 					    			int estimatedProfit = 0;
 					    			if(!args[1].equalsIgnoreCase("margin")) {
-					    				estimatedProfit = (int) ((((npcPrice*amountToBuy)-(pricePer*amountToBuy)))*1.04);
+					    				estimatedProfit = (int) (((npcPrice*amountToBuy)-(pricePer*amountToBuy)));
 					    			}
 					    			else {
 					    				estimatedProfit = (int) (((npcPrice*amountToBuy)-(pricePer*amountToBuy))/(pricePer*amountToBuy));
 					    			}
 					    			if(estimatedProfit > 1) {
+					    				estimatedProfit*=1.04;
 					    				sbr.append(EnumChatFormatting.AQUA+NotEnoughBazaar.bazaarConversions.getString(key)+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+amountToBuy+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+estimatedProfit+"\n");	
 					    			}
 					    		}
@@ -251,7 +252,7 @@ public class NotEnoughBazaarCommand extends CommandBase {
 				
 			}
 			else {
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Invalid Usage! Use /neb baznpc [margin/profit ] [instant/order] [amount/pure], using instant or order if you want to get prices for either, and purse if you want to buy as many items as your purse can allow."));
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Invalid Usage! Use /neb baznpc [margin/profit] [instant/order] [amount/purse], using instant or order if you want to get prices for either, and purse if you want to buy as many items as your purse can allow."));
 			}
 		}
 		else if(args.length >= 1 && args[0].equalsIgnoreCase("board")) {

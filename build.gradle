@@ -23,7 +23,7 @@ compileJava {
     targetCompatibility = '1.8'
 }
 
-version = "1.4.7"
+version = "1.4.8"
 group= "dev.nulloverload.notenoughbazaar"
 archivesBaseName = "nullnotenoughbazaar"
 
