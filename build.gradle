@@ -17,8 +17,13 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'java'
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
 
-version = "1.4.2"
+version = "1.4.7"
 group= "dev.nulloverload.notenoughbazaar"
 archivesBaseName = "nullnotenoughbazaar"
 

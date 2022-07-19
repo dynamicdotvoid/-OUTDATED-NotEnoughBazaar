@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import dev.nulloverload.notenoughbazaar.NotEnoughBazaar;
 import dev.nulloverload.notenoughbazaar.handlers.FileHandler;
 import dev.nulloverload.notenoughbazaar.handlers.OrderListHandler;
+import dev.nulloverload.notenoughbazaar.handlers.ScoreboardHandler;
 import dev.nulloverload.notenoughbazaar.utilities.ApiUtils;
 import dev.nulloverload.notenoughbazaar.utilities.MessageUtils;
 import net.minecraft.client.Minecraft;
@@ -36,6 +37,7 @@ import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StringUtils;
 
 public class NotEnoughBazaarCommand extends CommandBase {
 	private final List<String> aliases = Lists.newArrayList(dev.nulloverload.notenoughbazaar.NotEnoughBazaar.MODID, "neb", "notenoughbazaar");
@@ -127,6 +129,134 @@ public class NotEnoughBazaarCommand extends CommandBase {
 		}
 		else if(args.length >= 1 && args[0].equalsIgnoreCase("devhelp")) {
 			player.addChatMessage(new ChatComponentText(MessageUtils.nebSignature+MessageUtils.devHelpMsg));
+		}
+		else if(args.length >= 1 && args[0].equalsIgnoreCase("npcbaz")) {
+			if(args.length >= 2) {
+				JSONObject bazaarProd = ApiUtils.getBazaarProducts().getJSONObject("products");
+				Iterator<String> keys = NotEnoughBazaar.npcConversions.keys();
+				
+				StringBuilder sbb = new StringBuilder();
+				sbb.append(MessageUtils.nebSignature+EnumChatFormatting.YELLOW+"Npc -> Baz"+EnumChatFormatting.GREEN+"\nItem : Amount : Profit\n\n");
+				
+				while(keys.hasNext()) {
+				    String key = keys.next();
+				    if (NotEnoughBazaar.npcConversions.getString(key) instanceof String) {
+				    	JSONObject bazaarItem = bazaarProd.getJSONObject(key);
+				    	if(NotEnoughBazaar.npcConversions.has(bazaarItem.getString("product_id"))) {
+					    	double npcPrice = Double.parseDouble(NotEnoughBazaar.npcConversions.getString(key));
+					    	double totalPrice = npcPrice*640;
+					    	if(args[1].equalsIgnoreCase("instant")) {
+					    		JSONArray sum = bazaarItem.getJSONArray("sell_summary");
+					    		if(!sum.isEmpty()) {
+						    		JSONObject first = sum.getJSONObject(0);
+						    		double pricePer = first.getDouble("pricePerUnit");
+						    		int estimatedProfit = (int) (pricePer*640);
+						    		
+						    		sbb.append(EnumChatFormatting.AQUA+NotEnoughBazaar.bazaarConversions.getString(key)+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+"640 "+EnumChatFormatting.WHITE+": "+EnumChatFormatting.AQUA+estimatedProfit+"\n");
+					    		}
+					    	}
+					    	else if(args[1].equalsIgnoreCase("order")) {
+					    		JSONArray sum = bazaarItem.getJSONArray("buy_summary");
+					    		if(!sum.isEmpty()) {
+						    		JSONObject first = sum.getJSONObject(0);	
+						    		double pricePer = first.getDouble("pricePerUnit")-.1;
+						    		int estimatedProfit = (int) ((pricePer*640)-totalPrice);
+						    		
+						    		
+						    		sbb.append(EnumChatFormatting.AQUA+NotEnoughBazaar.bazaarConversions.getString(key)+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+"640 "+EnumChatFormatting.WHITE+": "+EnumChatFormatting.AQUA+estimatedProfit+"\n");
+					    		}
+					    	}	
+				    	}
+				    }
+				}
+				
+				player.addChatMessage(new ChatComponentText(sbb.toString()));
+				
+			}
+			else {
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Invalid Usage! Use /neb npcbaz [instant/order], using instant or order if you want to get prices for either."));
+			}
+		}
+		else if(args.length >= 1 && args[0].equalsIgnoreCase("baznpc")) {
+			if(args.length >= 4) {
+				JSONObject bazaarProd = ApiUtils.getBazaarProducts().getJSONObject("products");
+				Iterator<String> keys = NotEnoughBazaar.npcConversions.keys();
+				
+				StringBuilder sbr = new StringBuilder();
+				sbr.append(MessageUtils.nebSignature+EnumChatFormatting.YELLOW+"Baz -> Npc"+EnumChatFormatting.GREEN+"\nItem : Amount : Profit\n\n");
+				
+				while(keys.hasNext()) {
+				    String key = keys.next();
+				    if (NotEnoughBazaar.npcConversions.getString(key) instanceof String) {
+				    	JSONObject bazaarItem = bazaarProd.getJSONObject(key);
+				    	if(NotEnoughBazaar.npcConversions.has(bazaarItem.getString("product_id"))) {
+					    	double npcPrice = Double.parseDouble(NotEnoughBazaar.npcConversions.getString(key));
+					    	if(args[2].equalsIgnoreCase("instant")) {
+					    		JSONArray sum = bazaarItem.getJSONArray("buy_summary");
+					    		if(!sum.isEmpty()) {
+					    			JSONObject first = sum.getJSONObject(0);
+					    			double pricePer = first.getDouble("pricePerUnit");
+					    			int amountToBuy = 0;
+					    			if(!args[3].equalsIgnoreCase("purse")) {
+					    				amountToBuy = Integer.parseInt(args[3]);
+					    			}
+					    			else {
+					    				List<String> scoreboardLines = ScoreboardHandler.getSidebarLines();
+					    				String cleanCoin = StringUtils.stripControlCodes(scoreboardLines.get(2)).replaceAll(",", "");
+					    				double purseAmount = Double.parseDouble(cleanCoin);
+					    				amountToBuy = (int) (purseAmount/pricePer);
+					    			}
+					    			int estimatedProfit = 0;
+					    			if(!args[1].equalsIgnoreCase("margin")) {
+					    				estimatedProfit = (int) ((((npcPrice*amountToBuy)-(pricePer*amountToBuy)))*1.04);
+					    			}
+					    			else {
+					    				estimatedProfit = (int) (((npcPrice*amountToBuy)-(pricePer*amountToBuy))/(pricePer*amountToBuy));
+					    			}
+					    			if(estimatedProfit > 1) {
+					    				sbr.append(EnumChatFormatting.AQUA+NotEnoughBazaar.bazaarConversions.getString(key)+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+amountToBuy+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+estimatedProfit+"\n");	
+					    			}
+					    		}
+					    	}
+					    	else if(args[2].equalsIgnoreCase("order")) {
+					    		JSONArray sum = bazaarItem.getJSONArray("sell_summary");
+					    		if(!sum.isEmpty()) {
+					    			JSONObject first = sum.getJSONObject(0);
+					    			double pricePer = first.getDouble("pricePerUnit");
+					    			int amountToBuy = 0;
+					    			if(!args[3].equalsIgnoreCase("purse")) {
+					    				amountToBuy = Integer.parseInt(args[3]);
+					    			}
+					    			else {
+					    				List<String> scoreboardLines = ScoreboardHandler.getSidebarLines();
+					    				String cleanCoin = StringUtils.stripControlCodes(scoreboardLines.get(2)).replaceAll(",", "");
+					    				double purseAmount = Double.parseDouble(cleanCoin);
+					    				amountToBuy = (int) (purseAmount/pricePer);
+					    			}
+					    			int estimatedProfit = 0;
+					    			if(!args[1].equalsIgnoreCase("margin")) {
+					    				estimatedProfit = (int) ((npcPrice*amountToBuy)-(pricePer*amountToBuy));
+					    			}
+					    			else {
+					    				estimatedProfit = (int) (((npcPrice*amountToBuy)-(pricePer*amountToBuy))/(pricePer*amountToBuy));
+					    			}
+					    			sbr.append(EnumChatFormatting.AQUA+NotEnoughBazaar.bazaarConversions.getString(key)+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+amountToBuy+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+estimatedProfit+"\n");
+					    		}
+					    	}	
+				    	}
+				    }
+				}
+				
+				player.addChatMessage(new ChatComponentText(sbr.toString()));
+				
+			}
+			else {
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Invalid Usage! Use /neb baznpc [margin/profit ] [instant/order] [amount/pure], using instant or order if you want to get prices for either, and purse if you want to buy as many items as your purse can allow."));
+			}
+		}
+		else if(args.length >= 1 && args[0].equalsIgnoreCase("board")) {
+			List<String> scoreboardLines = ScoreboardHandler.getSidebarLines();
+			player.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE+scoreboardLines.toString()));
 		}
 	}
 	public void getNpcList() {
@@ -225,7 +355,7 @@ public class NotEnoughBazaarCommand extends CommandBase {
 		while(keys.hasNext()) {
 		    String key = keys.next();
 		    if (npcConversions.getString(key) instanceof String) {
-		          stbr.append(NotEnoughBazaar.bazaarConversions.getString(key)+" : "+npcConversions.getString(key)+"\n");
+		          stbr.append(EnumChatFormatting.AQUA+NotEnoughBazaar.bazaarConversions.getString(key)+EnumChatFormatting.WHITE+" : "+EnumChatFormatting.AQUA+npcConversions.getString(key)+"\n");
 		    }
 		}
 		player.addChatMessage(new ChatComponentText(stbr.toString()));
