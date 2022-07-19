@@ -14,8 +14,6 @@ import dev.nulloverload.notenoughbazaar.handlers.TickHandler;
 import dev.nulloverload.notenoughbazaar.utilities.UpdateUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -27,7 +25,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 public class NotEnoughBazaar
 {
     public static final String MODID = "nullnotenoughbazaar";
-    public static final String VERSION = "1.3.3";
+    public static final String VERSION = "1.4.2";
     
     public static String apiKey = "";
     public static boolean inBazaar = false;
@@ -37,6 +35,8 @@ public class NotEnoughBazaar
     	      new JSONTokener(NotEnoughBazaar.class.getResourceAsStream("/bazaarConversions.json")));
     public static JSONObject bazaarConversionsReversed = new JSONObject(
     	      new JSONTokener(NotEnoughBazaar.class.getResourceAsStream("/bazaarConversionsReversed.json")));
+    public static JSONObject npcConversions = new JSONObject(
+  	      new JSONTokener(NotEnoughBazaar.class.getResourceAsStream("/npcConversions.json")));
     
     @EventHandler
     public void init(FMLInitializationEvent event)
